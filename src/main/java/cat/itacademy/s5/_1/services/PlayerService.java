@@ -4,7 +4,6 @@ import cat.itacademy.s5._1.entities.Player;
 import cat.itacademy.s5._1.exceptions.PlayerNotFoundException;
 import cat.itacademy.s5._1.repositories.PlayerRepository;
 import cat.itacademy.s5._1.validations.ValidateInputs;
-import cat.itacademy.s5._1.validations.ValidateInputs.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -18,42 +17,49 @@ public class PlayerService {
     private PlayerRepository playerRepo;
 
     @Autowired
-    public PlayerService(PlayerRepository playerRepo){
+    public PlayerService(PlayerRepository playerRepo) {
         this.playerRepo = playerRepo;
     }
 
-    public void createPlayer(Player newPlayer){
+    public Mono<Player> createNewPlayer(String name, String email) {
+        Player newPlayer = Player.builder()
+                .playerEmail(email)
+                .playerName(name)
+                .build();
         validatePlayer(newPlayer);
-        playerRepo.save(newPlayer);
+        return playerRepo.save(newPlayer);
     }
 
-    public Flux<Player> findAll(){
+
+    public Flux<Player> findAll() {
         return playerRepo.findAll();
     }
 
-    public Mono<Player> findByID(UUID playerID){
+    public Mono<Player> findByID(UUID playerID) {
         return playerRepo.findById(playerID);
     }
 
-    public Mono<UUID> getIdByPlayerEmail(String playerEmail){
+    public Mono<UUID> getIdByPlayerEmail(String playerEmail) {
         return playerRepo.findByPlayerEmail(playerEmail)
-                .switchIfEmpty(Mono.error(new PlayerNotFoundException("email not found : " + playerEmail )))
-                    .map(Player::getPlayerID);
+                .switchIfEmpty(Mono.error(new PlayerNotFoundException("email not found : " + playerEmail)))
+                .map(Player::getPlayerID);
     }
 
-    public void deletePlayerById(String playerEmail){
-        Mono<UUID> playerId = getIdByPlayerEmail(playerEmail);
-        playerRepo.deleteById(playerId);
+    public Mono<Void> deletePlayerByEmail(String playerEmail) {
+        return getIdByPlayerEmail(playerEmail)
+                .flatMap(playerRepo::deleteById);
+
     }
 
-    public void validatePlayer(Player newPlayer){
+    public void validatePlayer(Player newPlayer) {
         ValidateInputs.validateFieldNotEmpty(newPlayer.getPlayerName());
         ValidateInputs.validateFieldNotEmpty(newPlayer.getPlayerEmail());
 
-        ValidateInputs.isValidEmail(newPlayer.getPlayerEmail());
+        ValidateInputs.validateEmail(newPlayer.getPlayerEmail());
+    }
 
-
-
+    public Mono<Boolean> existsByEmail(String playerEmail) {
+        return playerRepo.findByPlayerEmail(playerEmail).hasElement();
     }
     // existsById(ID id)	Vérifie si un enregistrement existe par ID	Mono<Boolean>
     // count()	Retourne le nombre total d’enregistrements	Mono<Long>
