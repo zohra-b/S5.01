@@ -40,6 +40,11 @@ public class PlayerService {
         Mono<UUID> playerId = getIdByPlayerEmail(playerEmail);
         playerRepo.deleteById(playerId);
     }
+
+    public void validatePlayer(Player newPlayer){
+
+
+    }
     // existsById(ID id)	Vérifie si un enregistrement existe par ID	Mono<Boolean>
     // count()	Retourne le nombre total d’enregistrements	Mono<Long>
     // deleteById(ID id)	Supprime un enregistrement par ID	Mono<Void>
