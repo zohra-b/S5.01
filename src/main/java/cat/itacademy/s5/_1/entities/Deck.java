@@ -2,6 +2,7 @@ package cat.itacademy.s5._1.entities;
 
 import cat.itacademy.s5._1.entities.enums.CardRank;
 import cat.itacademy.s5._1.entities.enums.CardSuit;
+import cat.itacademy.s5._1.validations.ValueOutOfRangeException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,17 @@ public class Deck {
 
     public void shuffleDeck(){
         Collections.shuffle(deck);
+    }
+
+    public boolean isEmpty(){
+        return deck.isEmpty();
+    }
+
+    public void drawCard(){
+        if (isEmpty()){
+            throw new ValueOutOfRangeException("The draw is empty");
+        }
+        deck.removeFirst();
     }
 
 }
