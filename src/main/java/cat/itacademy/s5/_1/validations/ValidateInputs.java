@@ -1,5 +1,8 @@
 package cat.itacademy.s5._1.validations;
 
+import cat.itacademy.s5._1.exceptions.EmptyInputException;
+import cat.itacademy.s5._1.exceptions.ValueOutOfRangeException;
+
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -81,10 +84,7 @@ public class ValidateInputs {
             try {
                 System.out.print(message);
                 String email = checkString();
-
-                if (!isValidEmail(email)) {
-                    throw new IllegalArgumentException("Invalid email format.");
-                }
+                isValidEmail(email);
 
                 return email;
             } catch (EmptyInputException | NoSuchElementException | IllegalStateException |
@@ -94,9 +94,11 @@ public class ValidateInputs {
         }
     }
 
-    private static boolean isValidEmail(String email) {
+    public static void isValidEmail(String email) {
         String regex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
-        return email.matches(regex);
+        if (!email.matches(regex)) {
+            throw new IllegalArgumentException("Invalid email format.");
+        }
     }
 
 }

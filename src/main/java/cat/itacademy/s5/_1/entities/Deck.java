@@ -2,10 +2,9 @@ package cat.itacademy.s5._1.entities;
 
 import cat.itacademy.s5._1.entities.enums.CardRank;
 import cat.itacademy.s5._1.entities.enums.CardSuit;
-import cat.itacademy.s5._1.validations.ValueOutOfRangeException;
+import cat.itacademy.s5._1.exceptions.ValueOutOfRangeException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,7 +1,10 @@
 package cat.itacademy.s5._1.services;
 
 import cat.itacademy.s5._1.entities.Player;
+import cat.itacademy.s5._1.exceptions.PlayerNotFoundException;
 import cat.itacademy.s5._1.repositories.PlayerRepository;
+import cat.itacademy.s5._1.validations.ValidateInputs;
+import cat.itacademy.s5._1.validations.ValidateInputs.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -20,6 +23,7 @@ public class PlayerService {
     }
 
     public void createPlayer(Player newPlayer){
+        validatePlayer(newPlayer);
         playerRepo.save(newPlayer);
     }
 
@@ -43,6 +47,11 @@ public class PlayerService {
     }
 
     public void validatePlayer(Player newPlayer){
+        ValidateInputs.validateFieldNotEmpty(newPlayer.getPlayerName());
+        ValidateInputs.validateFieldNotEmpty(newPlayer.getPlayerEmail());
+
+        ValidateInputs.isValidEmail(newPlayer.getPlayerEmail());
+
 
 
     }
