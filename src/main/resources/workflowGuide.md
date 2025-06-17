@@ -1,6 +1,6 @@
 # 🛠️ Guía Maestro del Flujo de Trabajo
 
-Esta página recoge todas las convenciones y pasos de nuestro flujo de trabajo colaborativo en GitHub: nombrado de ramas, commits, gestión de **Issues** y **Kanban**, Pull Requests, y el flujo completo desde la idea hasta el merge.
+Esta página recoge todas las convenciones y pasos de nuestro flujo de trabajo en GitHub: nombrado de ramas, commits, Pull Requests, y el flujo completo desde la idea hasta el merge.
 
 ## 📖 Introducción
 
@@ -68,15 +68,9 @@ feat: add registration endpoint
 
 ---
 
-## 🎯 Gestión de Issues y Kanban
+## 🎯 Kanban en Jira : https://zohra.atlassian.net/jira/software/projects/SCRUM/boards/1?atlOrigin=eyJpIjoiMThmOTM3MmY4ZGE2NGQ3NGEzYjhkNjAyY2FjYjliNDUiLCJwIjoiaiJ9
 
-1. **Crear un Issue** en la pestaña **Issues** con:
-    - **Título**: Ejemplos: `[Feature] Short description` o `[Bug] Short description`
-    - **Descripción**: qué, por qué y criterios de aceptación. Ejemplo:
-2. **Añadir Issue a la columna Backlog del Proyecto** (Kanban).
-3. **Cuando esté listo para empezar, mover la tarjeta a Ready.**
-4. **Etiquetas (labels)** para filtrar: `feature`, `bug`, `in progress`, `review`, `done`, etc.
-5. **Asignar** la tarjeta/issue al responsable.
+Tascas creadas en el Backlog y repartidas en Sprint. 
 
 
 ---
@@ -90,31 +84,29 @@ feat: add registration endpoint
   ```
 - **Descripción**:
     - Breve resumen de cambios.
-    - Referencia al Issue: `Closes #12`.
 - Asignar revisores y añadir comentarios según convención.
 
 ---
 
 ## 🚀 Flujo de trabajo completo
 
-1. **Crear Issue**
-2. **Mover Issue** a “backlog” en Kanban
-3. **Asignarse** la tarjeta
-4. **Crear rama** desde `dev`:
+1. ** Crear Tarjeta en Backlog de Jira **
+2. ** Mover la tarjeta a un Sprint **
+3. **Crear rama** desde `dev`:
    ```bash
    git checkout dev
    git checkout -b feature/short-description
    ```
-5. **Desarrollar** y **commitear** según convención.
-6. **Push** al remoto:
+4. **Desarrollar** y **commitear** según convención.
+5. **Push** al remoto:
    ```bash
    git push -u origin feature/short-description
    ```
-7. **Crear Pull Request** hacia `dev`.
+8. **Crear Pull Request** hacia `dev`.
 8. **Revisión** por el equipo.
 9. **Merge** manual cuando esté aprobado.
-10. **Cerrar Issue** (automático con `Closes #n`).
-11. **Eliminar rama** local y remota:
+11. **Cerrar Issue** (automático con `Closes #n`).
+12. **Eliminar rama** local y remota:
     ```bash
     git branch -d feature/short-description
     git push origin --delete feature/short-description
@@ -124,13 +116,11 @@ feat: add registration endpoint
 
 ## ✅ Checklist paso a paso
 
-- [ ] Issue creado y documentado
-- [ ] Issue añadido al Kanban
+- [ ] Tarjeta creada en Jira
 - [ ] Rama creada (`feature/...`)
 - [ ] Commits con mensajes según convención
 - [ ] Push de la rama al remoto
-- [ ] PR abierto con descripción y `Closes #n`
-- [ ] Revisores asignados
-- [ ] Merge tras aprobación
-- [ ] Issue cerrado y rama borrada  
+- [ ] PR abierto con descripción 
+- [ ] Merge 
+- [ ] Rama borrada  
 

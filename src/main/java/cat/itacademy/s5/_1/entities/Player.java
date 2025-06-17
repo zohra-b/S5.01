@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import reactor.core.publisher.Flux;
 
 import java.util.Date;
 import java.util.UUID;
@@ -28,5 +29,8 @@ public class Player {
 
     @Builder.Default
     private Date createdAt = new Date();
+
+    private int score = 0;
+
 
 }
