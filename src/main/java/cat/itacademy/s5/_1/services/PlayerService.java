@@ -33,6 +33,7 @@ public class PlayerService {
 
     public Mono<UUID> getIdByPlayerEmail(String playerEmail){
         return playerRepo.findByPlayerEmail(playerEmail)
+                .switchIfEmpty(Mono.error(new PlayerNotFoundException("email not found : " + playerEmail )))
                     .map(Player::getPlayerID);
     }
 

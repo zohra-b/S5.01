@@ -10,6 +10,17 @@ import org.springframework.web.reactive.result.method.annotation.ResponseEntityE
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler(PlayerNotFoundException.class)
+    public ResponseEntity<Object> hamdlePlayerNotFoundException(PlayerNotFoundException playerNotFoundException, WebRequest request){
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        String errorMsg = playerNotFoundException.getMessage();
+        String path = request.getDescription(false).replace("uri=", "");
+
+        ErrorResponse errorResponse = new ErrorResponse(status, errorMsg, path);
+
+        return new ResponseEntity<>(errorResponse, status);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException illegalArgExc, WebRequest request){
         HttpStatus status = HttpStatus.BAD_REQUEST;
