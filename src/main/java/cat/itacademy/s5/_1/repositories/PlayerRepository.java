@@ -6,7 +6,9 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface PlayerRepository extends ReactiveCrudRepository<Player, UUID> {
 
     Mono<Player> findByPlayerEmail(String playerEmail);

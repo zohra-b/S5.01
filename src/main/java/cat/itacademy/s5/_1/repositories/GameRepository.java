@@ -7,7 +7,9 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface GameRepository extends ReactiveMongoRepository<Game, String> { //Game et String :ObjectID =
 
 
