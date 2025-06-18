@@ -15,7 +15,7 @@ import org.bson.types.ObjectId;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document
+@Document(collection = "games")
 public class Game {
     private ObjectId gameId;
     private UUID playerID;

@@ -30,7 +30,7 @@ public class Player {
     @Builder.Default
     private Date createdAt = new Date();
 
-    private int score = 0;
+    private int totalScore = 0;
 
 
 }

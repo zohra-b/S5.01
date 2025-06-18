@@ -1,5 +1,6 @@
 package cat.itacademy.s5._1.services;
 
+import cat.itacademy.s5._1.dto.PlayerDTO;
 import cat.itacademy.s5._1.entities.Player;
 import cat.itacademy.s5._1.exceptions.PlayerNotFoundException;
 import cat.itacademy.s5._1.repositories.PlayerRepository;
@@ -49,6 +50,10 @@ public class PlayerService {
         return getIdByPlayerEmail(playerEmail)
                 .flatMap(playerRepo::deleteById);
 
+    }
+
+    public Flux<Player> showPlayersByTotalScore(){
+        return playerRepo.findAllByOrderByTotalScoreDesc();
     }
 
     public void validatePlayer(Player newPlayer) {
