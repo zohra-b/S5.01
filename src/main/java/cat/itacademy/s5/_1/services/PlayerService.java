@@ -1,6 +1,7 @@
 package cat.itacademy.s5._1.services;
 
 import cat.itacademy.s5._1.cache.PlayerCache;
+import cat.itacademy.s5._1.dtos.PlayerDTO;
 import cat.itacademy.s5._1.entities.Player;
 import cat.itacademy.s5._1.exceptions.PlayerNotFoundException;
 import cat.itacademy.s5._1.repositories.PlayerRepository;
@@ -9,29 +10,30 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PlayerService {
-    private PlayerRepository playerRepo;
-    @Autowired
-    private PlayerCache playerCache;
-    @Autowired
-    public PlayerService(PlayerRepository playerRepo) {
+    private final PlayerRepository playerRepo;
+    private final PlayerCache playerCache;
+
+    public PlayerService(PlayerRepository playerRepo, PlayerCache playerCache) {
         this.playerRepo = playerRepo;
+        this.playerCache = playerCache;
     }
 
 
-    public Mono<Player> createNewPlayer(String name, String email) {
-        Player newPlayer = Player.builder()
-                .playerEmail(email)
-                .playerName(name)
-                .build();
-        validatePlayer(newPlayer);
-        return playerRepo.save(newPlayer);
+    public Mono<PlayerDTO> createNewPlayer(String name, String email) {
+
+        return validatePlayerInputs(name, email)
+                .map(validEmail -> Player.builder()
+                        .playerEmail(validEmail)
+                        .playerName(name)
+                        .build())
+                .flatMap(playerRepo::save)
+                .map(PlayerDTO::fromEntity);
     }
+
 
 
     public Flux<Player> findAll() {
@@ -39,7 +41,8 @@ public class PlayerService {
     }
 
     public Mono<Player> findByID(UUID playerID) {
-        return playerRepo.findById(playerID);
+        return playerRepo.findById(playerID)
+                .switchIfEmpty(Mono.error(new PlayerNotFoundException("id not found : " + playerID)));
     }
 
     public Mono<UUID> getIdByPlayerEmail(String playerEmail) {
@@ -66,26 +69,24 @@ public class PlayerService {
     }
 
 
-    public Flux<Player> showPlayersByTotalScore(){
+    public Flux<Player> getPlayersSortedByScore(){
         return playerRepo.findAllByOrderByTotalScoreDesc();
     }
 
 
 
-    public void validatePlayer(Player newPlayer) {
-        ValidateInputs.validateFieldNotEmpty(newPlayer.getPlayerName());
-        ValidateInputs.validateFieldNotEmpty(newPlayer.getPlayerEmail());
+    public Mono<String> validatePlayerInputs(String name, String email) {
+        return Mono.just(name)
+                .filter(ValidateInputs::isValidFieldNotEmpty)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("you must enter a name")))
+                .then(Mono.just(email))
+                .filter(mail -> ValidateInputs.isValidFieldNotEmpty(mail) && ValidateInputs.isValidEmail(mail))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("you must enter an email")));
 
-        ValidateInputs.validateEmail(newPlayer.getPlayerEmail());
     }
 
     public Mono<Boolean> existsByEmail(String playerEmail) {
         return playerRepo.findByPlayerEmail(playerEmail).hasElement();
     }
-    // existsById(ID id)	Vérifie si un enregistrement existe par ID	Mono<Boolean>
-    // count()	Retourne le nombre total d’enregistrements	Mono<Long>
-    // deleteById(ID id)	Supprime un enregistrement par ID	Mono<Void>
-    // delete(T entity)	Supprime un enregistrement donné	Mono<Void>
-    // deleteAll()	Supprime tous les enregistrements	Mono<Void>
-    // deleteAll(Iterable<? extends T>)
+
 }

@@ -11,10 +11,16 @@ public class ValidateInputs {
 
     private static final Scanner SC = new Scanner(System.in);
 
-    public static void validateFieldNotEmpty(String input) throws EmptyInputException {
+    //    public static void validateFieldNotEmpty(String input) throws EmptyInputException {
+//        if (input.isEmpty()) {
+//            throw new EmptyInputException("the field cannot be empty");
+//        }
+//    }
+    public static boolean isValidFieldNotEmpty(String input) throws EmptyInputException {
         if (input.isEmpty()) {
             throw new EmptyInputException("the field cannot be empty");
         }
+        return true;
     }
 
     public static String readInput() {
@@ -55,7 +61,8 @@ public class ValidateInputs {
             try {
                 System.out.print(message);
                 String input = readInput();
-                validateFieldNotEmpty(input);
+                //validateFieldNotEmpty(input);
+                isValidFieldNotEmpty(input);
                 checkRangeNumber(input, minimum, maximum);
                 return Integer.parseInt(input);
             } catch (NullPointerException | NumberFormatException e) {
@@ -94,11 +101,13 @@ public class ValidateInputs {
         }
     }
 
-    public static void isValidEmail(String email) {
+    public static boolean isValidEmail(String email) {
         String regex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
         if (!email.matches(regex)) {
             throw new IllegalArgumentException("Invalid email format.");
         }
+        return true;
     }
+
 
 }
