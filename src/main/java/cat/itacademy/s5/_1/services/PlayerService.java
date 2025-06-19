@@ -1,6 +1,6 @@
 package cat.itacademy.s5._1.services;
 
-import cat.itacademy.s5._1.dto.PlayerDTO;
+import cat.itacademy.s5._1.cache.PlayerCache;
 import cat.itacademy.s5._1.entities.Player;
 import cat.itacademy.s5._1.exceptions.PlayerNotFoundException;
 import cat.itacademy.s5._1.repositories.PlayerRepository;
@@ -16,11 +16,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlayerService {
     private PlayerRepository playerRepo;
-
+    @Autowired
+    private PlayerCache playerCache;
     @Autowired
     public PlayerService(PlayerRepository playerRepo) {
         this.playerRepo = playerRepo;
     }
+
 
     public Mono<Player> createNewPlayer(String name, String email) {
         Player newPlayer = Player.builder()
@@ -52,9 +54,23 @@ public class PlayerService {
 
     }
 
+    public Mono<Player> updatePlayerScore(UUID playerID, int newScore) {
+        return playerRepo.findById(playerID)
+                .flatMap(player -> {
+                    int updatedScore = player.getTotalScore() + newScore;
+                    player.setTotalScore(updatedScore);
+                    return playerRepo.save(player);
+                })
+                .doOnSuccess(updatedPlayer -> playerCache.refreshPlayer(playerID).subscribe())
+                .switchIfEmpty(Mono.error(new PlayerNotFoundException(playerID.toString())));
+    }
+
+
     public Flux<Player> showPlayersByTotalScore(){
         return playerRepo.findAllByOrderByTotalScoreDesc();
     }
+
+
 
     public void validatePlayer(Player newPlayer) {
         ValidateInputs.validateFieldNotEmpty(newPlayer.getPlayerName());
