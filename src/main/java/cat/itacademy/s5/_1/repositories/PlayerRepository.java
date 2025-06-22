@@ -13,7 +13,8 @@ import org.springframework.stereotype.Repository;
 public interface PlayerRepository extends ReactiveCrudRepository<Player, UUID> {
 
     Mono<Player> findByPlayerEmail(String playerEmail);
-    Flux<Player> findAllByOrderByTotalScoreDesc();
+    Flux<Player>
+    findAllByOrderByTotalScoreDesc();
 
 
     // save(T entity)	Sauvegarde ou met à jour un enregistrement	Mono<T>

@@ -32,4 +32,10 @@ public class ErrorResponse {
         this.message = message;
         this.path = path;
     }
+    public ErrorResponse(HttpStatus status, String message){
+        this.timestamp = LocalDateTime.now();
+        this.status = status.value();
+        this.message = message;
+
+    }
 }
