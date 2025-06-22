@@ -52,6 +52,26 @@ public class PlayerService {
                 .map(Player::getPlayerID);
     }
 
+    public Mono<PlayerDTO> findByPlayerEmail(String playerEmail){
+        ValidateInputs.isValidEmail(playerEmail);
+        return playerRepo.findByPlayerEmail(playerEmail)
+                .map(PlayerDTO::fromEntity);
+
+    }
+
+    public Mono<PlayerDTO> updatePlayerName(UUID playerID, String newName) {
+        if (!ValidateInputs.isValidFieldNotEmpty(newName)) {
+            return Mono.error(new IllegalArgumentException("Name must not be empty"));
+        }
+
+        return playerRepo.findById(playerID)
+                .switchIfEmpty(Mono.error(new PlayerNotFoundException("Player not found: " + playerID)))
+                .flatMap(player -> {
+                    player.setPlayerName(newName);
+                    return playerRepo.save(player);
+                })
+                .map(PlayerDTO::fromEntity);
+    }
     public Mono<Player> updatePlayerScore(UUID playerID, int newScore) {
         return playerRepo.findById(playerID)
                 .flatMap(player -> {
