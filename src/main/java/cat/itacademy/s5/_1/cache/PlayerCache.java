@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PlayerCache {
     //Stocke les joueurs en mémoire sous forme de Map thread-safe (prend comme clé l'uuid et comme valeur le player)
-    private final ConcurrentMap<UUID, Player> cache = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Player> cache = new ConcurrentHashMap<>();
 
     // Injection du repository (accès à la base de données)
     @Autowired
@@ -27,17 +27,18 @@ public class PlayerCache {
                             // + Une seule fois
                             // ++ Juste après que Spring ait créé le bean (instance de la classe)
                             // +++ Avant que le bean ne soit utilisé par d'autres composants
+                            // +++ Avant que le bean ne soit utilisé par d'autres composants
     @PostConstruct
     public Mono<Void> init(){ // Méthode appelée automatiquement après la création du bean par Spring
         return playerRepo.findAll()   // 1. Récupère TOUS les joueurs depuis MongoDB
-                .doOnNext(player -> cache.put(player.getPlayerID(), player)) // 2. Pour chaque joueur trouvé, l'ajoute au cache
+                .doOnNext(player -> cache.put(player.getPlayerId(), player)) // 2. Pour chaque joueur trouvé, l'ajoute au cache
                 .then(); // 3. Termine le flux sans retourner de valeur (équivalent à .thenReturn(null)) : Convertit le Flux en Mono<Void> (signal de fin)
 
     }
 
-    public Mono<Void> refreshPlayer(UUID playerID){
-        return playerRepo.findById(playerID)
-                .doOnNext(player -> cache.put(playerID, player))
+    public Mono<Void> refreshPlayer(String playerId){
+        return playerRepo.findById(playerId)
+                .doOnNext(player -> cache.put(playerId, player))
                 .then();
     }
 }

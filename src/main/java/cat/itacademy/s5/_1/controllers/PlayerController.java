@@ -34,7 +34,7 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<Object>> getPlayerByID (@PathVariable UUID id){
+    public Mono<ResponseEntity<Object>> getPlayerByID (@PathVariable String id){
         return playerService.findByID(id)
                 .map(playerDTO -> ResponseEntity.ok().body((Object)playerDTO))
                 .onErrorResume(PlayerNotFoundException.class, e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage())));
@@ -68,14 +68,14 @@ public class PlayerController {
     }
 
     @PutMapping("/{id}/updateScore")
-    public Mono<ResponseEntity<Object>> updatePlayerScore(@PathVariable UUID id, @RequestParam int newScore){
+    public Mono<ResponseEntity<Object>> updatePlayerScore(@PathVariable String id, @RequestParam int newScore){
         return playerService.updatePlayerScore(id, newScore)
                 .map(player -> ResponseEntity.status(HttpStatus.OK).body((Object)"Score updated successfully"))
                 .onErrorResume(PlayerNotFoundException.class, e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage())));
     }
 
     @PutMapping("/{id}/updateName")
-    public Mono<ResponseEntity<Object>> updatePlayerName(@PathVariable UUID id, @RequestParam String newName){
+    public Mono<ResponseEntity<Object>> updatePlayerName(@PathVariable String id, @RequestParam String newName){
         return playerService.updatePlayerName(id, newName)
                 .map(playerDTO -> ResponseEntity.status(HttpStatus.OK).body((Object)"Score updated successfully"))
                 .onErrorResume(PlayerNotFoundException.class, e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage())));

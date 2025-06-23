@@ -10,7 +10,7 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PlayerRepository extends ReactiveCrudRepository<Player, UUID> {
+public interface PlayerRepository extends ReactiveCrudRepository<Player, String> {
 
     Mono<Player> findByPlayerEmail(String playerEmail);
     Flux<Player>

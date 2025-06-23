@@ -9,6 +9,7 @@ import cat.itacademy.s5._1.validations.ValidateInputs;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +27,37 @@ public class PlayerService {
         this.playerCache = playerCache;
     }
 
+//    public Mono<PlayerDTO> createNewPlayer(String name, String email) {
+//        return validatePlayerInputs(name, email)
+//                .map(validEmail -> {
+//                    Player newPlayer = new Player(name, email);
+//                    return newPlayer;
+//                })
+//                .flatMap(playerRepo::save)
+//                .map(PlayerDTO::fromEntity);
+//    }
+//    public Mono<PlayerDTO> createNewPlayer(String name, String email) {
+//        return validatePlayerInputs(name, email)
+//                .map(validEmail -> Player.builder()
+//                        .playerId(UUID.randomUUID().toString())
+//                        .playerName(name)
+//                        .playerEmail(validEmail)
+//                        .totalScore(0)
+//                        .build())
+//                .flatMap(player -> {
+//                return playerRepo.save(player);})
+//                .map(PlayerDTO::fromEntity);
+//    }
+
     public Mono<PlayerDTO> createNewPlayer(String name, String email) {
         return validatePlayerInputs(name, email)
-                .map(validEmail -> Player.builder()
-                        .playerEmail(validEmail)
-                        .playerName(name)
-                        .build())
+                .map(validEmail -> {
+                    // Utiliser le constructeur qui marque automatiquement isNewEntity = true
+                    Player newPlayer = new Player(name, validEmail);
+                    return newPlayer;
+                })
                 .flatMap(playerRepo::save)
+                .doOnNext(Player::markNotNew) // Marquer comme sauvegardé
                 .map(PlayerDTO::fromEntity);
     }
 
@@ -40,16 +65,16 @@ public class PlayerService {
         return playerRepo.findAll();
     }
 
-    public Mono<PlayerDTO> findByID(UUID playerID) {
-        return playerRepo.findById(playerID)
-                .switchIfEmpty(Mono.error(new PlayerNotFoundException("id not found : " + playerID)))
+    public Mono<PlayerDTO> findByID(String playerId) {
+        return playerRepo.findById(playerId)
+                .switchIfEmpty(Mono.error(new PlayerNotFoundException("id not found : " + playerId)))
                 .map(PlayerDTO::fromEntity);
     }
 
-    public Mono<UUID> getIdByPlayerEmail(String playerEmail) {
+    public Mono<String> getIdByPlayerEmail(String playerEmail) {
         return playerRepo.findByPlayerEmail(playerEmail)
                 .switchIfEmpty(Mono.error(new PlayerNotFoundException("email not found : " + playerEmail)))
-                .map(Player::getPlayerID);
+                .map(Player::getPlayerId);
     }
 
     public Mono<PlayerDTO> findByPlayerEmail(String playerEmail){
@@ -59,28 +84,28 @@ public class PlayerService {
 
     }
 
-    public Mono<PlayerDTO> updatePlayerName(UUID playerID, String newName) {
+    public Mono<PlayerDTO> updatePlayerName(String playerId, String newName) {
         if (!ValidateInputs.isValidFieldNotEmpty(newName)) {
             return Mono.error(new IllegalArgumentException("Name must not be empty"));
         }
 
-        return playerRepo.findById(playerID)
-                .switchIfEmpty(Mono.error(new PlayerNotFoundException("Player not found: " + playerID)))
+        return playerRepo.findById(playerId)
+                .switchIfEmpty(Mono.error(new PlayerNotFoundException("Player not found: " + playerId)))
                 .flatMap(player -> {
                     player.setPlayerName(newName);
                     return playerRepo.save(player);
                 })
                 .map(PlayerDTO::fromEntity);
     }
-    public Mono<Player> updatePlayerScore(UUID playerID, int newScore) {
-        return playerRepo.findById(playerID)
+    public Mono<Player> updatePlayerScore(String playerId, int newScore) {
+        return playerRepo.findById(playerId)
                 .flatMap(player -> {
                     int updatedScore = player.getTotalScore() + newScore;
                     player.setTotalScore(updatedScore);
                     return playerRepo.save(player);
                 })
-                .doOnSuccess(updatedPlayer -> playerCache.refreshPlayer(playerID).subscribe())
-                .switchIfEmpty(Mono.error(new PlayerNotFoundException(playerID.toString())));
+                .doOnSuccess(updatedPlayer -> playerCache.refreshPlayer(playerId).subscribe())
+                .switchIfEmpty(Mono.error(new PlayerNotFoundException(playerId.toString())));
     }
 
     public Mono<Void> deletePlayerByEmail(String playerEmail) {

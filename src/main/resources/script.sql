@@ -1,0 +1,10 @@
+
+
+DROP TABLE IF EXISTS players;
+CREATE TABLE players (
+    playerId VARCHAR(36) DEFAULT (REPLACE(UUID(), '-', '')) PRIMARY KEY,
+    playerName VARCHAR(255) NOT NULL,
+    playerEmail VARCHAR(255) NOT NULL UNIQUE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    totalScore INT DEFAULT 0
+);

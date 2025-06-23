@@ -18,7 +18,7 @@ import org.bson.types.ObjectId;
 @Document(collection = "games")
 public class Game {
     private ObjectId gameId;
-    private UUID playerID;
+    private UUID playerId;
     private Date startedAt;
     private Date endedAt;
     private GameStatus status;
