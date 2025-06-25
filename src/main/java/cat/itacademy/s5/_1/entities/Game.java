@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.bson.types.ObjectId;
@@ -18,7 +17,7 @@ import org.bson.types.ObjectId;
 @Document(collection = "games")
 public class Game {
     private ObjectId gameId;
-    private UUID playerID;
+    private String playerID;
     private Date startedAt;
     private Date endedAt;
     private GameStatus status;

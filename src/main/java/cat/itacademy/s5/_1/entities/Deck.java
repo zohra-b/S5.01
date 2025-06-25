@@ -39,11 +39,13 @@ public class Deck {
         return deck.isEmpty();
     }
 
-    public void drawCard(){
+    public Card drawCard(){
         if (isEmpty()){
             throw new ValueOutOfRangeException("The draw is empty");
         }
-        deck.removeFirst();
+        Card dealedCard = deck.removeFirst();
+        return dealedCard;
     }
+
 
 }
