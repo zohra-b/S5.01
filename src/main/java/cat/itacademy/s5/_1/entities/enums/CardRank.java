@@ -1,7 +1,7 @@
 package cat.itacademy.s5._1.entities.enums;
 
 public enum CardRank {
-    A("A", 11),    // Often 1 or 11 in Blackjack – we'll handle that in logic
+    A("A", 11),
     TWO("2", 2),
     THREE("3", 3),
     FOUR("4", 4),
