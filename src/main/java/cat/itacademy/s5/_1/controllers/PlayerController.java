@@ -71,14 +71,14 @@ public class PlayerController {
                 .onErrorResume(PlayerNotFoundException.class, e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage())));
     }
 
-    @PutMapping("/{id}/updateName")
-    public Mono<ResponseEntity<Object>> updatePlayerName(@PathVariable String id, @RequestParam String newName){
+    @PutMapping("/{id}")
+    public Mono<ResponseEntity<Object>> updatePlayerName(@PathVariable String id, @RequestBody String newName){
         return playerService.updatePlayerName(id, newName)
                 .map(playerDTO -> ResponseEntity.status(HttpStatus.OK).body((Object)"Name updated successfully"))
                 .onErrorResume(PlayerNotFoundException.class, e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage())));
     }
 
-    @GetMapping("/leaderboard")
+    @GetMapping("/ranking")
     public Flux<PlayerDTO> getPlayersSortedByScore() {
         return playerService.getPlayersSortedByScore()
                 .map(PlayerDTO::fromEntity);

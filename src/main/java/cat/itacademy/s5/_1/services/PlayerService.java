@@ -27,28 +27,6 @@ public class PlayerService {
         this.playerCache = playerCache;
     }
 
-//    public Mono<PlayerDTO> createNewPlayer(String name, String email) {
-//        return validatePlayerInputs(name, email)
-//                .map(validEmail -> {
-//                    Player newPlayer = new Player(name, email);
-//                    return newPlayer;
-//                })
-//                .flatMap(playerRepo::save)
-//                .map(PlayerDTO::fromEntity);
-//    }
-//    public Mono<PlayerDTO> createNewPlayer(String name, String email) {
-//        return validatePlayerInputs(name, email)
-//                .map(validEmail -> Player.builder()
-//                        .playerId(UUID.randomUUID().toString())
-//                        .playerName(name)
-//                        .playerEmail(validEmail)
-//                        .totalScore(0)
-//                        .build())
-//                .flatMap(player -> {
-//                return playerRepo.save(player);})
-//                .map(PlayerDTO::fromEntity);
-//    }
-
     public Mono<PlayerDTO> createNewPlayer(String name, String email) {
         return validatePlayerInputs(name, email)
                 .map(validEmail -> {
