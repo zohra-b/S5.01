@@ -4,6 +4,7 @@ import cat.itacademy.s5._1.dtos.GameDTO;
 import cat.itacademy.s5._1.entities.Deck;
 import cat.itacademy.s5._1.entities.Game;
 import cat.itacademy.s5._1.entities.enums.GameStatus;
+import cat.itacademy.s5._1.exceptions.GameNotFoundException;
 import cat.itacademy.s5._1.repositories.GameRepository;
 
 import reactor.core.publisher.Flux;
@@ -19,16 +20,18 @@ import org.bson.types.ObjectId;
 public class GameService {
     private final GameRepository gameRepo;
     private final GameLogic gameLogic;
+    private final PlayerService playerService;
 
-    public GameService(GameRepository gameRepo, GameLogic gameLogic) {
+    public GameService(GameRepository gameRepo, GameLogic gameLogic, PlayerService playerService) {
         this.gameRepo = gameRepo;
         this.gameLogic = gameLogic;
+        this.playerService = playerService;
     }
 
-    public Mono<Game> startNewGame(String playerId){
+    public Mono<GameDTO> startNewGame(String playerId) {
         Game game = new Game();
         game.setGameId(new ObjectId());
-        game.setPlayerID(playerId);
+        game.setPlayerId(playerId);
         game.setStartedAt(new Date());
         game.setStatus(GameStatus.IN_PROGRESS);
         game.setDeck(new Deck());
@@ -40,20 +43,28 @@ public class GameService {
         game.getPlayerHand().add(game.getDeck().drawCard());
         game.getDealerHand().add(game.getDeck().drawCard());
 
-       game.setStatus(gameLogic.evaluateInitialStatus(game));
-        return gameRepo.save(game);
+        game.setStatus(gameLogic.evaluateInitialStatus(game));
+        return gameRepo.save(game)
+                .flatMap(savedGame ->
+                        GameDTO.gameDtoFromGameAndPlayerMono(savedGame, playerService.findByID(playerId)
+                        ));
     }
 
-    public Mono<Game> getGameById(ObjectId gameId){
-        return gameRepo.findById(gameId);
+    public Mono<GameDTO> getGameById(ObjectId gameId) {
+        return gameRepo.findById(gameId)
+                .switchIfEmpty(Mono.error(new GameNotFoundException("Game with id " + gameId + " not found")))
+                .flatMap(game ->
+                        GameDTO.gameDtoFromGameAndPlayerMono(game, playerService.findByID(game.getPlayerId())));
     }
 
-    public Flux<GameDTO> findByPlayerId(String playerId){
+
+    public Flux<GameDTO> findByPlayerId(String playerId) {
         return gameRepo.findByPlayerId(playerId);
     }
 
-    public Mono<Game> hit(ObjectId gameId) {
-        return getGameById(gameId)
+    public Mono<GameDTO> hit(ObjectId gameId) {
+        return gameRepo.findById(gameId)
+                .switchIfEmpty(Mono.error(new GameNotFoundException("Game with id " + gameId + " not found")))
                 .flatMap(game -> {
                     game.getPlayerHand().add(game.getDeck().drawCard());
                     int handValue = gameLogic.calculateHandValue(game.getPlayerHand());
@@ -62,25 +73,34 @@ public class GameService {
                         game.setEndedAt(new Date());
                     }
                     return gameRepo.save(game);
-                });
+                })
+                .flatMap(savedGame ->
+                        GameDTO.gameDtoFromGameAndPlayerMono(savedGame, playerService.findByID(savedGame.getPlayerId()))
+                );
+
     }
 
-    public Mono<Game> stand(ObjectId gameId){
-        return getGameById(gameId)
+    public Mono<GameDTO> stand(ObjectId gameId) {
+        return gameRepo.findById(gameId)
+                .switchIfEmpty(Mono.error(new GameNotFoundException("Game with id " + gameId + " not found")))
                 .flatMap(game -> {
                     gameLogic.dealerLogic(game);
                     gameLogic.evaluateFinalGameStatus(game);
                     return gameRepo.save(game);
-                });
-
+                })
+                .flatMap(game ->
+                        GameDTO.gameDtoFromGameAndPlayerMono(game, playerService.findByID(game.getPlayerId())));
     }
-       public Mono<Game> endGame(ObjectId gameId){
-            return getGameById(gameId)
-                    .flatMap(game -> {
-                        game.setEndedAt(new Date());
-                        return gameRepo.save(game);
-                    });
-       }
+
+    public Mono<GameDTO> endGame(ObjectId gameId) {
+        return gameRepo.findById(gameId)
+                .switchIfEmpty(Mono.error(new GameNotFoundException("Game with id " + gameId + " not found")))
+                .flatMap(game -> { game.setEndedAt(new Date());
+                    return gameRepo.save(game);
+                })
+                .flatMap(game ->
+                        GameDTO.gameDtoFromGameAndPlayerMono(game, playerService.findByID(game.getPlayerId())));
+    }
 
     // save(T entity)	Sauvegarde (insert ou update)	Mono<T>
     // saveAll(Iterable<T> entities)	Sauvegarde plusieurs éléments	Flux<T>

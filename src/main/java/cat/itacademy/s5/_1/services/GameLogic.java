@@ -7,6 +7,9 @@ import cat.itacademy.s5._1.entities.enums.GameStatus;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class GameLogic {
 
     public int calculateHandValue(List<Card> hand) {

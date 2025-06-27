@@ -24,11 +24,11 @@ public record GameDTO (ObjectId gameId,
 
 
     // Factory method that accepts the player directly
-    public static GameDTO gameDtoFromGameAndPlayer(Game game, Player player){
+    public static GameDTO gameDtoFromGameAndPlayer(Game game, PlayerDTO playerDTO){
         return new GameDTO(
                 game.getGameId(),
-                player.getPlayerName(),
-                player.getPlayerEmail(),
+                playerDTO.playerName(),
+                playerDTO.playerEmail(),
                 game.getStartedAt(),
                 game.getStatus(),
                 game.getPlayerHand(),
@@ -36,7 +36,8 @@ public record GameDTO (ObjectId gameId,
         );
     }
 
-    public static Mono<GameDTO> gameDtoFromGameAndPlayerMono(Game game, Mono<Player> playerMono){
+
+    public static Mono<GameDTO> gameDtoFromGameAndPlayerMono(Game game, Mono<PlayerDTO> playerMono){
         return playerMono.map(player -> gameDtoFromGameAndPlayer(game, player));
     }
 
