@@ -56,4 +56,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, status);
     }
 
+    @ExceptionHandler(InvalidMoveException.class)
+    public ResponseEntity<Object> handleInvalidMove(InvalidMoveException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
 }
