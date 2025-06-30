@@ -5,6 +5,7 @@ import cat.itacademy.s5._1.entities.Deck;
 import cat.itacademy.s5._1.entities.Game;
 import cat.itacademy.s5._1.entities.enums.GameStatus;
 import cat.itacademy.s5._1.exceptions.GameNotFoundException;
+import cat.itacademy.s5._1.exceptions.InvalidMoveException;
 import cat.itacademy.s5._1.repositories.GameRepository;
 
 import reactor.core.publisher.Flux;
@@ -62,6 +63,17 @@ public class GameService {
         return gameRepo.findByPlayerId(playerId);
     }
 
+    public Mono<GameDTO> play(ObjectId gameId, String moveType){
+        String move = moveType.toLowerCase().trim();
+        switch (move) {
+            case "hit": return hit(gameId);
+            case "stand": return stand(gameId);
+            default:
+                return Mono.error(new InvalidMoveException("Unsupported move: " + moveType));
+        }
+
+    }
+
     public Mono<GameDTO> hit(ObjectId gameId) {
         return gameRepo.findById(gameId)
                 .switchIfEmpty(Mono.error(new GameNotFoundException("Game with id " + gameId + " not found")))
@@ -77,7 +89,6 @@ public class GameService {
                 .flatMap(savedGame ->
                         GameDTO.gameDtoFromGameAndPlayerMono(savedGame, playerService.findByID(savedGame.getPlayerId()))
                 );
-
     }
 
     public Mono<GameDTO> stand(ObjectId gameId) {
@@ -100,6 +111,10 @@ public class GameService {
                 })
                 .flatMap(game ->
                         GameDTO.gameDtoFromGameAndPlayerMono(game, playerService.findByID(game.getPlayerId())));
+    }
+
+    public Mono<Void> deleteGameById(ObjectId gameId){
+        return gameRepo.deleteById(String.valueOf(gameId));
     }
 
     // save(T entity)	Sauvegarde (insert ou update)	Mono<T>

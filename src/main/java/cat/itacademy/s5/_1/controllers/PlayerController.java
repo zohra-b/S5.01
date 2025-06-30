@@ -39,7 +39,6 @@ public class PlayerController {
 
     @GetMapping("/playerByEmail/{email}")
     public Mono<ResponseEntity<Object>> getPlayerbyEmail(@PathVariable String email) {
-
         return playerService.findByPlayerEmail(email)
                 .map(playerDTO -> ResponseEntity.ok().body((Object) playerDTO))
                 .onErrorResume(PlayerNotFoundException.class, e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage())));
@@ -68,7 +67,8 @@ public class PlayerController {
     public Mono<ResponseEntity<Object>> updatePlayerScore(@PathVariable String id, @RequestParam int newScore){
         return playerService.updatePlayerScore(id, newScore)
                 .map(player -> ResponseEntity.status(HttpStatus.OK).body((Object)"Score updated successfully"))
-                .onErrorResume(PlayerNotFoundException.class, e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage())));
+                .onErrorResume(PlayerNotFoundException.class,
+                        e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage())));
     }
 
     @PutMapping("/{id}")
