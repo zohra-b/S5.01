@@ -13,10 +13,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
-
-/// //////////////////////////////////////// enunciado : cambiar nombre durante el partido :
-/// is it : UPDATE NAME ? OR CHANGE PLAYER ???  normalement : update name : todo;
-
 @Service
 public class PlayerService {
     private final PlayerRepository playerRepo;
