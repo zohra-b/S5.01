@@ -1,8 +1,10 @@
 package cat.itacademy.s5._1.services;
 
 import cat.itacademy.s5._1.dtos.GameDTO;
+import cat.itacademy.s5._1.dtos.GameSummaryDTO;
 import cat.itacademy.s5._1.entities.Deck;
 import cat.itacademy.s5._1.entities.Game;
+import cat.itacademy.s5._1.entities.Player;
 import cat.itacademy.s5._1.entities.enums.GameStatus;
 import cat.itacademy.s5._1.exceptions.GameNotFoundException;
 import cat.itacademy.s5._1.exceptions.InvalidMoveException;
@@ -30,12 +32,15 @@ public class GameService {
     }
 
     public Mono<GameDTO> startNewGame(String playerId) {
+
         Game game = new Game();
+        Deck deck = new Deck();
+        deck.initialize();
         game.setGameId(new ObjectId());
         game.setPlayerId(playerId);
         game.setStartedAt(new Date());
         game.setStatus(GameStatus.IN_PROGRESS);
-        game.setDeck(new Deck());
+        game.setDeck(deck);
         game.setPlayerHand(new ArrayList<>());
         game.setDealerHand(new ArrayList<>());
 
@@ -59,8 +64,10 @@ public class GameService {
     }
 
 
-    public Flux<GameDTO> findByPlayerId(String playerId) {
-        return gameRepo.findByPlayerId(playerId);
+
+    public Flux<GameSummaryDTO> findSummariesPlayerId(String playerId) {
+        return gameRepo.findByPlayerId(playerId)
+                .map(GameSummaryDTO::gameSummaryDtoFromGame);
     }
 
     public Mono<GameDTO> play(ObjectId gameId, String moveType){
@@ -78,43 +85,75 @@ public class GameService {
         return gameRepo.findById(gameId)
                 .switchIfEmpty(Mono.error(new GameNotFoundException("Game with id " + gameId + " not found")))
                 .flatMap(game -> {
-                    game.getPlayerHand().add(game.getDeck().drawCard());
-                    int handValue = gameLogic.calculateHandValue(game.getPlayerHand());
-                    if (handValue > 21) {
-                        game.setStatus(GameStatus.DEALER_WINS);
-                        game.setEndedAt(new Date());
+                    if (game.getStatus() != GameStatus.IN_PROGRESS) {
+                        return Mono.error(new InvalidMoveException(" Cannot hit: the game is already finished"));
                     }
-                    return gameRepo.save(game);
-                })
-                .flatMap(savedGame ->
-                        GameDTO.gameDtoFromGameAndPlayerMono(savedGame, playerService.findByID(savedGame.getPlayerId()))
-                );
+
+                    game.getPlayerHand().add(game.getDeck().drawCard());
+                    GameStatus newStatus = gameLogic.evaluateStatusAfterHit(game);
+
+                    if (newStatus != GameStatus.IN_PROGRESS) {
+                        return endGame(game, newStatus); // Blackjack ou bust
+                    }
+
+                    return gameRepo.save(game)
+                            .flatMap(savedGame ->
+                                    GameDTO.gameDtoFromGameAndPlayerMono(savedGame, playerService.findByID(savedGame.getPlayerId()))
+                            );
+                });
     }
 
     public Mono<GameDTO> stand(ObjectId gameId) {
         return gameRepo.findById(gameId)
                 .switchIfEmpty(Mono.error(new GameNotFoundException("Game with id " + gameId + " not found")))
                 .flatMap(game -> {
+                    if (game.getStatus() != GameStatus.IN_PROGRESS) {
+                        return Mono.error(new InvalidMoveException(" Cannot stand: the game is already finished"));
+                    }
+
+                    GameStatus earlyStatus = gameLogic.evaluateStatusAfterHit(game);
+                    if (earlyStatus != GameStatus.IN_PROGRESS) {
+                        return endGame(game, earlyStatus);
+                    }
+
                     gameLogic.dealerLogic(game);
-                    gameLogic.evaluateFinalGameStatus(game);
-                    return gameRepo.save(game);
-                })
-                .flatMap(game ->
-                        GameDTO.gameDtoFromGameAndPlayerMono(game, playerService.findByID(game.getPlayerId())));
+                    GameStatus finalStatus = gameLogic.evaluateFinalGameStatus(game);
+                    return endGame(game, finalStatus);
+                });
     }
 
-    public Mono<GameDTO> endGame(ObjectId gameId) {
-        return gameRepo.findById(gameId)
-                .switchIfEmpty(Mono.error(new GameNotFoundException("Game with id " + gameId + " not found")))
-                .flatMap(game -> { game.setEndedAt(new Date());
-                    return gameRepo.save(game);
-                })
-                .flatMap(game ->
-                        GameDTO.gameDtoFromGameAndPlayerMono(game, playerService.findByID(game.getPlayerId())));
+    private Mono<GameDTO> endGame(Game game, GameStatus status) {
+        game.setStatus(status);
+        game.setEndedAt(new Date());
+
+        return playerService.updatePlayerScore(game.getPlayerId(), giveScore(status) )
+                        .then(gameRepo.save(game))
+                .flatMap(savedGame ->
+                        GameDTO.gameDtoFromGameAndPlayerMono(savedGame, playerService.findByID(savedGame.getPlayerId()))
+                );
     }
 
     public Mono<Void> deleteGameById(ObjectId gameId){
         return gameRepo.deleteById(String.valueOf(gameId));
+    }
+
+    private int giveScore(GameStatus gameStatus){
+       int points;
+        switch (gameStatus){
+           case PLAYER_BLACKJACK :
+               points = 3;
+               break;
+           case PLAYER_WINS:
+               points = 2;
+               break;
+           case TIE:
+               points = 1;
+               break;
+           default:
+               points = 0;
+               break;
+       }
+       return points;
     }
 
     // save(T entity)	Sauvegarde (insert ou update)	Mono<T>

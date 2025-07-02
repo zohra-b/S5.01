@@ -44,6 +44,16 @@ public class GameLogic {
             return GameStatus.IN_PROGRESS;
 
     }
+    public GameStatus evaluateStatusAfterHit(Game game){
+        int playerHandValue = calculateHandValue(game.getPlayerHand());
+        if (playerHandValue > 21) {
+            return GameStatus.DEALER_WINS;
+        } else if (playerHandValue == 21) {
+            return GameStatus.PLAYER_WINS;
+        } else {
+            return GameStatus.IN_PROGRESS;
+        }
+    }
 
     public GameStatus evaluateFinalGameStatus(Game game){
         int playerHandValue = calculateHandValue(game.getPlayerHand());
@@ -58,10 +68,10 @@ public class GameLogic {
     }
 
     public void dealerLogic(Game game){
-        int dealerHandValue = calculateHandValue(game.getDealerHand());
-        while (dealerHandValue < 17)
+        while (calculateHandValue(game.getDealerHand()) < 17) {
             game.getDealerHand().add(game.getDeck().drawCard());
-
+        }
     }
+
 
 }
