@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.bson.types.ObjectId;
 
@@ -16,12 +17,14 @@ import org.bson.types.ObjectId;
 @AllArgsConstructor
 @Document(collection = "games")
 public class Game {
+    @Id
     private ObjectId gameId;
+
     private String playerId;
     private Date startedAt;
     private Date endedAt;
     private GameStatus status;
-    private Deck deck = new Deck();
+    private Deck deck;
     private List<Card> playerHand;
     private List<Card> dealerHand;
 

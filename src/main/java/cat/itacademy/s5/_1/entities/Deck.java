@@ -11,16 +11,23 @@ import java.util.Collections;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
+
 
 public class Deck {
     private List<Card> deck;
 
-    public Deck() {
-        this.deck = loadDeck();
-        shuffleDeck();
+    public Deck(List<Card> deck) {
+        this.deck = deck;
     }
 
+    // Obligatoire pour la désérialisation par Spring Data MongoDB
+    public Deck() {}
+
+    public void initialize() {
+        this.deck = new ArrayList<>();
+        loadDeck();
+        shuffleDeck();
+    }
     public List<Card> loadDeck() {
         deck = new ArrayList<>();
         for (CardSuit cardSuit : CardSuit.values() ){
@@ -35,16 +42,17 @@ public class Deck {
         Collections.shuffle(deck);
     }
 
-    public boolean isEmpty(){
-        return deck.isEmpty();
+
+
+    public boolean isEmpty() {
+        return deck == null || deck.isEmpty();
     }
 
     public Card drawCard(){
         if (isEmpty()){
             throw new ValueOutOfRangeException("The draw is empty");
         }
-        Card dealedCard = deck.removeFirst();
-        return dealedCard;
+        return deck.remove(0);
     }
 
 

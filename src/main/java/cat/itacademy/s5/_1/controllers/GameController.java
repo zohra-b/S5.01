@@ -1,12 +1,10 @@
 package cat.itacademy.s5._1.controllers;
 
-import cat.itacademy.s5._1.dtos.GameDTO;
-import cat.itacademy.s5._1.dtos.PlayRequest;
-import cat.itacademy.s5._1.dtos.StartGameRequest;
-import cat.itacademy.s5._1.entities.Game;
+import cat.itacademy.s5._1.dtos.*;
 import cat.itacademy.s5._1.exceptions.GameNotFoundException;
 import cat.itacademy.s5._1.exceptions.InvalidMoveException;
 import cat.itacademy.s5._1.services.GameService;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.bson.types.ObjectId;
 
 @RestController
-@RequestMapping("/game")
+@RequestMapping("/games")
 public class GameController {
     private final GameService gameService;
 
@@ -33,13 +31,16 @@ public class GameController {
                         -> ResponseEntity.status(HttpStatus.CREATED).body(gameDTO) );
     }
 
-    @PostMapping("/{id}/play")
-    public Mono<ResponseEntity<GameDTO>> playGame(@PathVariable String id, @RequestParam PlayRequest request){
+    @PutMapping("/{id}/play")
+    public Mono<ResponseEntity<Object>> playGame(@PathVariable String id, @RequestBody PlayRequest request){
         ObjectId gameId = new ObjectId(id);
         return gameService.play(gameId, request.getMoveType())
-                .map(gameDto -> ResponseEntity.ok().body(gameDto))
+                .map(gameDto -> ResponseEntity.ok().body((Object) gameDto))
                 .onErrorResume(InvalidMoveException.class, ex ->
-                        Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).build()));
+                        Mono.just(ResponseEntity
+                                .status(HttpStatus.BAD_REQUEST)
+                                .body(new ErrorMessageDTO("Invalid Move" + ex.getMessage())))
+                );
     }
 
     @GetMapping("/{id}")
@@ -56,8 +57,16 @@ public class GameController {
     public Mono<ResponseEntity<Object>> deleteGameById(@PathVariable String id){
         ObjectId gameId = new ObjectId(id);
         return gameService.deleteGameById(gameId)
-                .map(game -> ResponseEntity.status(HttpStatus.NO_CONTENT).body((Object)"Game deleted"));
+                .map(game -> ResponseEntity.status(HttpStatus.OK).body((Object)"Game deleted"));
     }
+
+
+    @GetMapping("/{playerId}/games")
+    public Flux<GameSummaryDTO> getGamesByPlayerId(@PathVariable String playerId){
+        return gameService.findSummariesPlayerId(playerId);
+    }
+
+
 
 
 

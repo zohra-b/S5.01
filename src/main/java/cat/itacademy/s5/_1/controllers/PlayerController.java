@@ -44,6 +44,8 @@ public class PlayerController {
                 .onErrorResume(PlayerNotFoundException.class, e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage())));
     }
 
+
+
     @PostMapping("/login")
     public Mono<ResponseEntity<Object>> playerLogin(@RequestBody  String email){
         if (email== null || email.trim().isEmpty()) {
@@ -71,6 +73,8 @@ public class PlayerController {
                         e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage())));
     }
 
+
+
     @PutMapping("/{id}")
     public Mono<ResponseEntity<Object>> updatePlayerName(@PathVariable String id, @RequestBody String newName){
         return playerService.updatePlayerName(id, newName)
@@ -83,4 +87,5 @@ public class PlayerController {
         return playerService.getPlayersSortedByScore()
                 .map(PlayerDTO::fromEntity);
     }
+
 }
