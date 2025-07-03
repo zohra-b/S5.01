@@ -45,4 +45,22 @@ public class PlayerControllerTest {
                     assertEquals(playerDTO1.totalScore(), playerDTO.totalScore());
                 });
     }
+
+    @Test
+    void playerLogin_WhenNotRegisteredEmailProvided_ShouldReturn404(){
+        //GIVEN
+        String email = "marcalonso@alonso.com";
+        when(playerService.findByPlayerEmail(email)).thenReturn(Mono.empty());
+
+        //WHEN+THEN
+        webTestClient.post()
+                .uri("/players/login")
+                .bodyValue(email)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(String.class)
+                .value(body -> assertEquals("Email not found in database, create a new player", body));
+    }
+
+
 }

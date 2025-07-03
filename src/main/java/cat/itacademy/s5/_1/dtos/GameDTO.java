@@ -1,6 +1,5 @@
 package cat.itacademy.s5._1.dtos;
 
-import cat.itacademy.s5._1.entities.Card;
 import cat.itacademy.s5._1.entities.Game;
 import cat.itacademy.s5._1.entities.enums.GameStatus;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
