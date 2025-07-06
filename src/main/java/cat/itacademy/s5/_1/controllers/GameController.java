@@ -62,7 +62,7 @@ public class GameController {
 
 
     @GetMapping("/{playerId}/games")
-    public Flux<GameSummaryDTO> getGamesByPlayerId(@PathVariable String playerId){
+    public Mono<GamesByPlayerDTO> getGamesByPlayerId(@PathVariable String playerId){
         return gameService.findSummariesPlayerId(playerId);
     }
 
