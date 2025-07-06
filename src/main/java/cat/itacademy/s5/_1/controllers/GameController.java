@@ -18,21 +18,20 @@ import org.bson.types.ObjectId;
 public class GameController {
     private final GameService gameService;
 
-@Autowired
+    @Autowired
     public GameController(GameService gameService) {
         this.gameService = gameService;
     }
 
-
     @PostMapping("/new")
-    public Mono<ResponseEntity<GameDTO>> startNewGame(@RequestBody StartGameRequest request){
+    public Mono<ResponseEntity<GameDTO>> startNewGame(@RequestBody StartGameRequest request) {
         return gameService.startNewGame(request.getPlayerId())
                 .map(gameDTO
-                        -> ResponseEntity.status(HttpStatus.CREATED).body(gameDTO) );
+                        -> ResponseEntity.status(HttpStatus.CREATED).body(gameDTO));
     }
 
     @PutMapping("/{id}/play")
-    public Mono<ResponseEntity<Object>> playGame(@PathVariable String id, @RequestBody PlayRequest request){
+    public Mono<ResponseEntity<Object>> playGame(@PathVariable String id, @RequestBody PlayRequest request) {
         ObjectId gameId = new ObjectId(id);
         return gameService.play(gameId, request.getMoveType())
                 .map(gameDto -> ResponseEntity.ok().body((Object) gameDto))
@@ -44,32 +43,28 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<GameDTO>> getGameById(@PathVariable String id){
+    public Mono<ResponseEntity<GameDTO>> getGameById(@PathVariable String id) {
         ObjectId gameId = new ObjectId(id);
         return gameService.getGameById(gameId)
-            .map(gameDTO
-                    -> ResponseEntity.status(HttpStatus.OK).body(gameDTO) )
+                .map(gameDTO
+                        -> ResponseEntity.status(HttpStatus.OK).body(gameDTO))
                 .onErrorResume(GameNotFoundException.class,
-                e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build()));
+                        e -> Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build()));
     }
 
     @DeleteMapping("/{id}/delete")
-    public Mono<ResponseEntity<Object>> deleteGameById(@PathVariable String id){
+    public Mono<ResponseEntity<Object>> deleteGameById(@PathVariable String id) {
         ObjectId gameId = new ObjectId(id);
         return gameService.deleteGameById(gameId)
-                .map(game -> ResponseEntity.status(HttpStatus.OK).body((Object)"Game deleted"));
+                .map(game -> ResponseEntity.status(HttpStatus.OK).body((Object) "Game deleted"));
     }
 
-
+//    @GetMapping("/{playerId}/games")
+//    public Flux<GameSummaryDTO> getGamesByPlayerId(@PathVariable String playerId) {
+//        return gameService.findSummariesPlayerId(playerId);
+//    }
     @GetMapping("/{playerId}/games")
     public Mono<GamesByPlayerDTO> getGamesByPlayerId(@PathVariable String playerId){
         return gameService.findSummariesPlayerId(playerId);
     }
-
-
-
-
-
-
-
 }

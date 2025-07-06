@@ -11,29 +11,29 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 
-public record GameDTO (
-                        @JsonSerialize(using = ToStringSerializer.class)
-                        ObjectId gameId,
-                       String playerName,
-                       String playerEmail,
-                       Date startedAt,
-                       GameStatus status,
-                       List<CardDTO> playerHand,
-                       List<CardDTO> dealerHand)         {
+public record GameDTO(
+        @JsonSerialize(using = ToStringSerializer.class)
+        ObjectId gameId,
+        String playerName,
+        String playerEmail,
+        Date startedAt,
+        GameStatus status,
+        List<CardDTO> playerHand,
+        List<CardDTO> dealerHand) {
 
 
     // Factory method that accepts the player directly
-    public static GameDTO gameDtoFromGameAndPlayer(Game game, PlayerDTO playerDTO){
+    public static GameDTO gameDtoFromGameAndPlayer(Game game, PlayerDTO playerDTO) {
         List<CardDTO> playerHand = game.getPlayerHand()
                 .stream().map(card -> new CardDTO(card.getCardSuit().name(), card.getCardRank().name()))
                 .toList();
 
         List<CardDTO> dealerHand = game.getDealerHand()
-                .stream().map(card -> new CardDTO(card.getCardSuit().name(), card.getCardRank().name()))
+                .stream()
+                .map(card -> new CardDTO(card.getCardSuit().name(), card.getCardRank().name()))
                 .toList();
 
         return new GameDTO(
-
                 game.getGameId(),
                 playerDTO.playerName(),
                 playerDTO.playerEmail(),
@@ -45,8 +45,9 @@ public record GameDTO (
     }
 
 
-    public static Mono<GameDTO> gameDtoFromGameAndPlayerMono(Game game, Mono<PlayerDTO> playerMono){
-        return playerMono.map(player -> gameDtoFromGameAndPlayer(game, player));
+    public static Mono<GameDTO> gameDtoFromGameAndPlayerMono(Game game, Mono<PlayerDTO> playerMono) {
+        return playerMono
+                .map(player -> gameDtoFromGameAndPlayer(game, player));
     }
 
 }

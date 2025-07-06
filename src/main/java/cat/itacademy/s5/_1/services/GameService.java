@@ -3,6 +3,9 @@ package cat.itacademy.s5._1.services;
 import cat.itacademy.s5._1.dtos.GameDTO;
 import cat.itacademy.s5._1.dtos.GameSummaryDTO;
 import cat.itacademy.s5._1.dtos.GamesByPlayerDTO;
+
+import cat.itacademy.s5._1.dtos.PlayerDTO;
+
 import cat.itacademy.s5._1.entities.Deck;
 import cat.itacademy.s5._1.entities.Game;
 import cat.itacademy.s5._1.entities.Player;
@@ -69,8 +72,8 @@ public class GameService {
 //    public Flux<GameSummaryDTO> findSummariesPlayerId(String playerId) {
 //        return gameRepo.findByPlayerId(playerId)
 //                .map(GameSummaryDTO::gameSummaryDtoFromGame);
-//
 //    }
+  
     public Mono<GamesByPlayerDTO> findSummariesPlayerId(String playerId) {
         return playerService.findByID(playerId)
                 .flatMap(playerDTO ->
@@ -83,7 +86,10 @@ public class GameService {
                                                 playerDTO.playerEmail(),
                                                 gameSummaries
                                         ))
-                );}
+
+                        );}
+
+
 
     public Mono<GameDTO> play(ObjectId gameId, String moveType){
         String move = moveType.toLowerCase().trim();

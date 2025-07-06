@@ -13,6 +13,6 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Blackjack API")
                         .version("1.0")
-                        .description("Documentation interactive de l'API Blackjack WebFlux"));
+                        .description("Interactive doc of an API Blackjack WebFlux"));
     }
 }
