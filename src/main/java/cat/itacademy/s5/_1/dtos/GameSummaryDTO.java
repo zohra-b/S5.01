@@ -13,8 +13,9 @@ public record GameSummaryDTO(
                                 @JsonSerialize(using = ToStringSerializer.class)
                                 ObjectId gameId,
                              Date startedAt,
-                             GameStatus status,
-                             Date endedAt
+                                Date endedAt,
+                             GameStatus status
+
                              ) {
 
     public static GameSummaryDTO gameSummaryDtoFromGame(Game game){
@@ -23,8 +24,9 @@ public record GameSummaryDTO(
         return new GameSummaryDTO(
                 game.getGameId(),
                 game.getStartedAt(),
-                game.getStatus(),
-                actualEnd
+                actualEnd,
+                game.getStatus()
+
         );
     }
 }
