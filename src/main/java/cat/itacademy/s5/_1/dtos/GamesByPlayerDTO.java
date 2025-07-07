@@ -4,5 +4,6 @@ import java.util.List;
 
 public record GamesByPlayerDTO(String playerName,
                                String playerEmail,
+                               List<GameSummaryDTO> playerGames) {
 
-                               List<GameSummaryDTO> playerGames) {}
+}

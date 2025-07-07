@@ -3,18 +3,13 @@ package cat.itacademy.s5._1.services;
 import cat.itacademy.s5._1.dtos.GameDTO;
 import cat.itacademy.s5._1.dtos.GameSummaryDTO;
 import cat.itacademy.s5._1.dtos.GamesByPlayerDTO;
-
-import cat.itacademy.s5._1.dtos.PlayerDTO;
-
 import cat.itacademy.s5._1.entities.Deck;
 import cat.itacademy.s5._1.entities.Game;
-import cat.itacademy.s5._1.entities.Player;
 import cat.itacademy.s5._1.entities.enums.GameStatus;
 import cat.itacademy.s5._1.exceptions.GameNotFoundException;
 import cat.itacademy.s5._1.exceptions.InvalidMoveException;
 import cat.itacademy.s5._1.repositories.GameRepository;
 
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -68,12 +63,6 @@ public class GameService {
     }
 
 
-
-//    public Flux<GameSummaryDTO> findSummariesPlayerId(String playerId) {
-//        return gameRepo.findByPlayerId(playerId)
-//                .map(GameSummaryDTO::gameSummaryDtoFromGame);
-//    }
-  
     public Mono<GamesByPlayerDTO> findSummariesPlayerId(String playerId) {
         return playerService.findByID(playerId)
                 .flatMap(playerDTO ->
@@ -86,9 +75,7 @@ public class GameService {
                                                 playerDTO.playerEmail(),
                                                 gameSummaries
                                         ))
-
                         );}
-
 
 
     public Mono<GameDTO> play(ObjectId gameId, String moveType){
@@ -177,14 +164,5 @@ public class GameService {
        return points;
     }
 
-    // save(T entity)	Sauvegarde (insert ou update)	Mono<T>
-    // saveAll(Iterable<T> entities)	Sauvegarde plusieurs éléments	Flux<T>
-    // findById(ID id)	Cherche par identifiant	Mono<T>
-    // findAll()	Renvoie tous les documents de la collection	Flux<T>
-    // existsById(ID id)	Vérifie si un ID existe	Mono<Boolean>
-    // count()	Compte tous les documents	Mono<Long>
-    // deleteById(ID id)	Supprime un document par ID	Mono<Void>
-    // delete(T entity)	Supprime un document	Mono<Void>
-    // deleteAll()	Supprime toute la collection	Mono<Void>
-    // deleteAll(Iterable<? extends T>)	Supprime plusieurs documents	Mono<Void>
+
 }

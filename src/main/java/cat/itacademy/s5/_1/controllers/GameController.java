@@ -64,7 +64,7 @@ public class GameController {
 //        return gameService.findSummariesPlayerId(playerId);
 //    }
     @GetMapping("/{playerId}/games")
-    public Mono<GamesByPlayerDTO> getGamesByPlayerId(@PathVariable String playerId){
+    public Mono<GamesByPlayerDTO> getGamesByPlayerId(@PathVariable String playerId) {
         return gameService.findSummariesPlayerId(playerId);
     }
 }
