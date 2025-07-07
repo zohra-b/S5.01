@@ -18,12 +18,11 @@ This project implements a reactive Java API for a Blackjack game using Spring Bo
 - [API Endpoints](#api-endpoints)
   - [Player Management](#player-management)
   - [Game Management](#game-management)
-- [Database Configuration](#database-configuration)
-- [Exception Handling](#exception-handling)
-- [Testing](#testing)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
+
+-[Exception Handling](#-exception-handling)
+- [Testing](#-testing)
+- [Project Structure](#-project-structure)
+- [Contributing](#-contributing)
 
 ## Features
 - **Reactive Architecture**: Built with Spring WebFlux for non-blocking operations
