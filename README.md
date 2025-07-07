@@ -27,9 +27,9 @@ This project implements a reactive Java API for a Blackjack game using Spring Bo
 
 ## Features
 - **Reactive Architecture**: Built with Spring WebFlux for non-blocking operations
-- **Dual Database Support**: Works with both MongoDB and MySQL
-- **Complete Game Logic**: Implements all Blackjack rules (hit, stand, double, etc.)
-- **Player Management**: Registration, authentication, and score tracking
+- **Database**: MongoDB and MySQL
+- **Game Logic**: Implements all Blackjack rules (hit, stand, )
+- **Player Management**: Registration and score tracking
 - **Comprehensive Testing**: Unit and integration tests coverage
 - **API Documentation**: Auto-generated Swagger/OpenAPI docs
 
@@ -62,8 +62,10 @@ This project implements a reactive Java API for a Blackjack game using Spring Bo
 
    ```bash
 mvn clean install
+```
    ```bash
 mvn spring-boot:run
+```
 
 The application will be available at: http://localhost:8080
 
@@ -76,7 +78,7 @@ API documentation is automatically generated using SpringDoc OpenAPI. Once the a
 
 
 ## API Endpoints
-
+### Player Management (MySQL)
 
 | Endpoint                     | Method | Description                                  |
 |------------------------------|--------|----------------------------------------------|
