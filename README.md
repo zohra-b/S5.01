@@ -78,7 +78,7 @@ API documentation is automatically generated using SpringDoc OpenAPI. Once the a
 
 
 ## API Endpoints
-### Player Management (MySQL)
+### 🧑 Player Management (MySQL)
 
 | Endpoint                     | Method | Description                                  |
 |------------------------------|--------|----------------------------------------------|
@@ -91,7 +91,7 @@ API documentation is automatically generated using SpringDoc OpenAPI. Once the a
 | `/players/{id}`              | PUT    | Changes a player's name                      |
 | `/players/ranking`           | GET    | Retrieves players ranked by total score      |
 
-### Game Management (MongoDB)
+### 🎮 Game Management (MongoDB)
 
 | Endpoint                     | Method | Description                                  |
 |------------------------------|--------|----------------------------------------------|
@@ -100,3 +100,40 @@ API documentation is automatically generated using SpringDoc OpenAPI. Once the a
 | `/games/{id}`                | GET    | Retrieves the full details of a game session |
 | `/games/{id}/delete`         | DELETE | Deletes a specific game session              |
 | `/games/{playerId}/games`    | GET    | Retrieves all games by a specific player     |
+
+
+## 🛑 Exception Handling
+The application uses a centralized exception handler (@RestControllerAdvice) to catch and return structured error responses for:
++ Empty Inputs exceptions
++ Value out of range exception
++ Game not found exception
++ Player not found exception
++ Invalid move exception
+
+##  🧪 Testing
+The project includes:
+
+✅ Unit tests for services and controllers (using JUnit & Mockito)
+- start a new game
+- get player by id
+- player not found
+
+✅ Integration Test
+- getPlayerById
+  
+🧱 Code is structured for testability with dependency injection
+
+To run tests:
+ ```bash
+mvn test
+ ```
+
+
+🤝 Contributing
+Contributions are welcome! Here's how:
+
+1- Fork the project
+2- Create a feature branch (git checkout -b feature/your-feature)
+3- Commit your changes (git commit -m "Add your feature")
+4- Push to the branch (git push origin feature/your-feature)
+5- Open a pull request
