@@ -19,7 +19,7 @@ This project implements a reactive Java API for a Blackjack game using Spring Bo
   - [Player Management](#player-management)
   - [Game Management](#game-management)
 
--[Exception Handling](#-exception-handling)
+- [Exception Handling](#-exception-handling)
 - [Testing](#-testing)
 - [Project Structure](#-project-structure)
 - [Contributing](#-contributing)
