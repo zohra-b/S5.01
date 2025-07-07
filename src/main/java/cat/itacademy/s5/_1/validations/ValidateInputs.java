@@ -11,11 +11,6 @@ public class ValidateInputs {
 
     private static final Scanner SC = new Scanner(System.in);
 
-    //    public static void validateFieldNotEmpty(String input) throws EmptyInputException {
-//        if (input.isEmpty()) {
-//            throw new EmptyInputException("the field cannot be empty");
-//        }
-//    }
     public static boolean isValidFieldNotEmpty(String input) throws EmptyInputException {
         if (input.isEmpty()) {
             throw new EmptyInputException("the field cannot be empty");
