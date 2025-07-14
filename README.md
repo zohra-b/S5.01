@@ -21,7 +21,6 @@ This project implements a reactive Java API for a Blackjack game using Spring Bo
 
 - [Exception Handling](#-exception-handling)
 - [Testing](#-testing)
-- [Project Structure](#-project-structure)
 - [Contributing](#-contributing)
 
 ## Features
@@ -47,7 +46,6 @@ This project implements a reactive Java API for a Blackjack game using Spring Bo
 ### Prerequisites
 - JDK 17+
 - Maven 3.8+
-- Docker (optional, for database containers)
 - MySQL 8.0+
 - MongoDB 5.0+
 
@@ -67,6 +65,7 @@ mvn spring-boot:run
 ```
 
 The application will be available at: http://localhost:8080
+Don't forget to run your MySql and MongoDb environments
 
 ## Documentation (Swagger)
 

@@ -19,27 +19,21 @@ import org.junit.jupiter.api.TestInstance;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//demarre spring comme si c'etait l'appli, et demarre un serveur sur un port aleatoire)
 @AutoConfigureWebTestClient
-//active l’injection d’un WebTestClient pour envoyer des requêtes HTTP
-// simule des appels HTTP comme un Postman
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-// garde les mêmes instances de classe entre les tests (utilse pour beforeAll)
-@ActiveProfiles("test") /// TRES IMPORTANT POUR NE PAS FLINGUER LA BASE DE DONNEES : CF application-test.properties
+@ActiveProfiles("test")
 
 public class PlayerIntegrationTest {
     @Autowired
     private WebTestClient webTestClient;
     @Autowired
     private PlayerRepository playerRepo;
-    //on injecte le repo reel
-
     private Player savedPlayer;
 
     @BeforeEach
     void setUp()
     {
-        playerRepo.deleteAll().block(); // nettoie la base avant chaque test
+        playerRepo.deleteAll().block();
 
         Player player = new Player(
                 "id123456",
